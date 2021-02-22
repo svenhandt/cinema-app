@@ -27,6 +27,7 @@ public class BookingServiceImpl implements BookingService
 	{
 		BookingView bookingView = new BookingView();
 		bookingView.setPresentationId(presentationId);
+		bookingView.setId(presentationId);
 		bookingView.setTotalPrice(new BigDecimal(0));
 		bookingView.setSeatIds(new ArrayList<>());
 		return bookingView;

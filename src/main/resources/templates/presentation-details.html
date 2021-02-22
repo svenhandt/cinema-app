@@ -34,11 +34,11 @@
 
             <br/><br/><br/>
 
-            <form action="#" th:action="@{/booking/createSeats}" method="POST">
 
-                <table class="table table-borderless">
 
-                    <tbody>
+            <table class="table table-borderless">
+
+                <tbody>
                     <tr th:each="numberToSeatRowMapping : ${presentationDetails.roomView.numberSeatRowMapping}">
                         <td>
                             <span th:text="${numberToSeatRowMapping.key} + ': '"/>
@@ -55,20 +55,23 @@
 
                         </td>
                     </tr>
-                    </tbody>
-                </table>
+                </tbody>
+            </table>
 
-                <input type="hidden" name="totalPrice" class="totalPrice" />
-
-            </form>
 
             <br/>
 
             <div class="col-12">
 
-                <span id="totalPrice" class="lead" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: block;'" th:text="'Gesamtsumme: ' + ${booking.totalPriceFormatted}" />
+                <form th:action="@{/booking/prepare}" method="POST">
 
-                <button id="bookingButton" class="btn btn-primary btn-lg float-right" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: block;'">Buchen</button>
+                    <input type="hidden" name="bookingId" id="bookingId" th:value="${booking.id}" />
+
+                    <span id="totalPrice" class="lead" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: inline;'" th:text="'Gesamtsumme: ' + ${booking.totalPriceFormatted}" />
+
+                    <input type="submit" id="bookingButton" value="Buchen" class="btn btn-primary btn-lg float-right" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: inline;'" />
+
+                </form>
 
             </div>
 
