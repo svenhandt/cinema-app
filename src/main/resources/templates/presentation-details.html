@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Belegungsplan</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+        <link rel="stylesheet" th:href="@{/css/cinema.css}" />
+
+        <script src="js/jquery-3.5.1.min.js"></script>
+        <script src="js/presentationDetails.js"></script>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <br/><br/><br/>
+
+            <h2 class="text-center" th:text="${presentationDetails.filmView.title}"></h2>
+            <h4 class="text-center"
+                th:text="${presentationDetails.roomView.roomName} + ', ' + ${presentationDetails.dayOfWeek} + ' ' + ${presentationDetails.startTime}"></h4>
+
+            <br/><br/><br/>
+
+            <div class="border-top" />
+
+            <br/><br/><br/>
+
+            <form action="#" th:action="@{/booking/createSeats}" method="POST">
+
+                <table class="table table-borderless">
+
+                    <tbody>
+                    <tr th:each="numberToSeatRowMapping : ${presentationDetails.roomView.numberSeatRowMapping}">
+                        <td>
+                            <span th:text="${numberToSeatRowMapping.key} + ': '"/>
+                        </td>
+
+                        <td th:each="seat : ${numberToSeatRowMapping.value.seatViews}">
+
+                            <input type="checkbox" class="seatCheckbox" th:id="${presentationDetails.id} + '_' + ${seat.id}"
+                                   th:if="${seat.seatType == T(com.svenhandt.app.cinemaapp.enums.SeatType).AVAILABLE}"
+                                        th:checked="${booking.seatIds.contains(seat.id)}"/>
+
+                            <input type="checkbox" th:if="${seat.seatType == T(com.svenhandt.app.cinemaapp.enums.SeatType).OCCUPPIED}"
+                                   disabled="disabled"/>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <input type="hidden" name="totalPrice" class="totalPrice" />
+
+            </form>
+
+            <br/>
+
+            <div class="col-12">
+
+                <span id="totalPrice" class="lead" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: block;'" th:text="'Gesamtsumme: ' + ${booking.totalPriceFormatted}" />
+
+                <button id="bookingButton" class="btn btn-primary btn-lg float-right" th:style="${booking.totalPriceFormatted} == null ? 'display: none;' : 'display: block;'">Buchen</button>
+
+            </div>
+
+
+        </div>
+
+    </body>
+
+</html>
