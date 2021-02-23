@@ -1,16 +1,19 @@
 package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.controller.Constants.ControllerConstants;
+import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
 import com.svenhandt.app.cinemaapp.service.BookingService;
+import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
+import com.svenhandt.app.cinemaapp.view.PresentationView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,6 +24,8 @@ public class BookingController
 {
 
 	private BookingService bookingService;
+
+	private PresentationDetailsService presentationDetailsService;
 
 	private enum Action
 	{
@@ -39,9 +44,30 @@ public class BookingController
 		return addOrRemoveSeatAtSessionBooking(presentationSeatId, httpServletRequest, Action.REMOVE);
 	}
 
-	public String prepareBookingDataForm(@RequestParam("bookingId") int bookingId)
+	@PostMapping("/booking/prepare")
+	public String prepareBookingDataForm(HttpServletRequest httpServletRequest, Model model)
 	{
-		return null;
+		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
+		PresentationView presentationView = presentationDetailsService.getPresentationDetails(bookingView.getPresentationId(), PresentationDetailsOption.BASIC);
+		return "";
+	}
+
+	private BookingView getBookingViewFromRequestParam(HttpServletRequest httpServletRequest)
+	{
+		BookingView bookingView;
+		String bookingId = httpServletRequest.getParameter("bookingId");
+		Validate.notNull(bookingId, "Booking id must not be null");
+		HttpSession session = httpServletRequest.getSession();
+		Object bookingViewObject = session.getAttribute(bookingId);
+		if(bookingViewObject instanceof BookingView)
+		{
+			bookingView = (BookingView)bookingViewObject;
+		}
+		else
+		{
+			throw new IllegalStateException("No booking in session - invalid state");
+		}
+		return bookingView;
 	}
 
 	private ResponseEntity<BookingView> addOrRemoveSeatAtSessionBooking(String presentationSeatId,  HttpServletRequest httpServletRequest, Action action)
@@ -85,5 +111,11 @@ public class BookingController
 	public void setBookingService(BookingService bookingService)
 	{
 		this.bookingService = bookingService;
+	}
+
+	@Autowired
+	public void setPresentationDetailsService(PresentationDetailsService presentationDetailsService)
+	{
+		this.presentationDetailsService = presentationDetailsService;
 	}
 }

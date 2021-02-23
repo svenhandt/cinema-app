@@ -12,6 +12,7 @@ public class BookingView
 	private BigDecimal totalPrice;
 	private String totalPriceFormatted;
 	private List<Integer> seatIds;
+	
 
 	public int getId()
 	{

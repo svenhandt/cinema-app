@@ -1,10 +1,13 @@
 package com.svenhandt.app.cinemaapp.service.impl;
 
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
+import com.svenhandt.app.cinemaapp.entity.Film;
 import com.svenhandt.app.cinemaapp.entity.Presentation;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.service.DataTypeConversionService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
+import com.svenhandt.app.cinemaapp.view.FilmView;
+import com.svenhandt.app.cinemaapp.view.PresentationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

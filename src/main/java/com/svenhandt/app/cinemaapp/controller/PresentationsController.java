@@ -1,6 +1,7 @@
 package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.controller.Constants.ControllerConstants;
+import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.service.PresentationListService;
@@ -42,7 +43,7 @@ public class PresentationsController
 		if(presentationIdStr != null && presentationIdStr.matches("\\d+"))
 		{
 			int presentationId = Integer.parseInt(presentationIdStr);
-			PresentationView presentationDetails = presentationDetailsService.getPresentationDetails(presentationId);
+			PresentationView presentationDetails = presentationDetailsService.getPresentationDetails(presentationId, PresentationDetailsOption.FULL);
 			model.addAttribute("presentationDetails", presentationDetails);
 			BookingView presentationBookingView = getBookingViewFromSession(presentationId, httpServletRequest);
 			model.addAttribute("booking", presentationBookingView);

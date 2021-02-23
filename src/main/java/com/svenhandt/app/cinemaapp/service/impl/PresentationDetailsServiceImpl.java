@@ -4,6 +4,7 @@ import com.svenhandt.app.cinemaapp.dao.BookingRepository;
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
 import com.svenhandt.app.cinemaapp.dao.SeatRepository;
 import com.svenhandt.app.cinemaapp.entity.*;
+import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
 import com.svenhandt.app.cinemaapp.enums.SeatType;
 import com.svenhandt.app.cinemaapp.service.DataTypeConversionService;
 import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
@@ -29,19 +30,19 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 	private DataTypeConversionService dataTypeConversionService;
 
 	@Override
-	public PresentationView getPresentationDetails(int presentationId)
+	public PresentationView getPresentationDetails(int presentationId, PresentationDetailsOption option)
 	{
 		PresentationView presentationView = null;
 		Optional<Presentation> presentationOptional = presentationRepository.findById(presentationId);
 		if(presentationOptional.isPresent())
 		{
 			Presentation presentation = presentationOptional.get();
-			presentationView = createPresentationDetails(presentation);
+			presentationView = createPresentationDetails(presentation, option);
 		}
 		return presentationView;
 	}
 
-	private PresentationView createPresentationDetails(Presentation presentation)
+	private PresentationView createPresentationDetails(Presentation presentation, PresentationDetailsOption option)
 	{
 		Validate.notNull(presentation.getRoom(), "Presentation must have a room");
 		Validate.notNull(presentation.getFilm(), "Presentation must have a film");
@@ -52,7 +53,7 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 		presentationView.setStartTime(dataTypeConversionService.getTimeOfDayFormatted(presentation.getStartTime()));
 		presentationView.setPrice(presentation.getPrice());
 		setFilmView(presentation, presentationView);
-		presentationView.setRoomView(createRoomView(presentation));
+		presentationView.setRoomView(createRoomView(presentation, option));
 		return presentationView;
 	}
 
@@ -63,16 +64,19 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 		presentationView.setFilmView(filmView);
 	}
 
-	private RoomView createRoomView(Presentation presentation)
+	private RoomView createRoomView(Presentation presentation, PresentationDetailsOption option)
 	{
 		Room room = presentation.getRoom();
 		RoomView roomView = new RoomView();
 		roomView.setRoomId(room.getId());
 		roomView.setRoomName(room.getName());
-		List<Seat> seatsForRoom = seatRepository.findAllByRoom(room, Sort.by(Sort.Direction.ASC, "seatRow", "numberInSeatRow"));
-		Map<Integer, Seat> presentationOccuppiedSeats = getOccuppiedSeatsMap(presentation);
-		Map<Integer, SeatRowView> numberSeatRowMapping = createNumberSeatRowMapping(presentationOccuppiedSeats, seatsForRoom);
-		roomView.setNumberSeatRowMapping(numberSeatRowMapping);
+		if(PresentationDetailsOption.FULL.equals(option))
+		{
+			List<Seat> seatsForRoom = seatRepository.findAllByRoom(room, Sort.by(Sort.Direction.ASC, "seatRow", "numberInSeatRow"));
+			Map<Integer, Seat> presentationOccuppiedSeats = getOccuppiedSeatsMap(presentation);
+			Map<Integer, SeatRowView> numberSeatRowMapping = createNumberSeatRowMapping(presentationOccuppiedSeats, seatsForRoom);
+			roomView.setNumberSeatRowMapping(numberSeatRowMapping);
+		}
 		return roomView;
 	}
 
