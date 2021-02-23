@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
     <head>
-        <title>Belegungsplan</title>
+        <title>Kinokasse</title>
 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -28,7 +28,10 @@
             <h4 class="text-center"
                 th:text="${presentationDetails.roomView.roomName} + ', ' + ${presentationDetails.dayOfWeek} + ' ' + ${presentationDetails.startTime}"></h4>
 
-            <br/><br/><br/>
+            <br/><br/>
+            <h5 class="text-center">Bitte treffen Sie Ihre Platzwahl</h5>
+
+            <br/><br/>
 
             <div class="border-top" />
 
@@ -48,7 +51,7 @@
 
                             <input type="checkbox" class="seatCheckbox" th:id="${presentationDetails.id} + '_' + ${seat.id}"
                                    th:if="${seat.seatType == T(com.svenhandt.app.cinemaapp.enums.SeatType).AVAILABLE}"
-                                        th:checked="${booking.seatIds.contains(seat.id)}"/>
+                                        th:checked="${booking.seatsMap.containsKey(seat.id)}"/>
 
                             <input type="checkbox" th:if="${seat.seatType == T(com.svenhandt.app.cinemaapp.enums.SeatType).OCCUPPIED}"
                                    disabled="disabled"/>
@@ -74,6 +77,15 @@
                 </form>
 
             </div>
+
+            <br/><br/>
+
+            <hr/>
+
+            <div class="row">
+                <a href="/">Zurück zur Übersicht</a>
+            </div>
+
 
 
         </div>

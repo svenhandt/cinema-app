@@ -11,7 +11,6 @@ public class PresentationView
 	private int id;
 	private String dayOfWeek;
 	private String startTime;
-	private BigDecimal price;
 	private FilmView filmView;
 	private RoomView roomView;
 
@@ -43,16 +42,6 @@ public class PresentationView
 	public void setStartTime(String startTime)
 	{
 		this.startTime = startTime;
-	}
-
-	public BigDecimal getPrice()
-	{
-		return price;
-	}
-
-	public void setPrice(BigDecimal price)
-	{
-		this.price = price;
 	}
 
 	public FilmView getFilmView()

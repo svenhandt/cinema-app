@@ -1,18 +1,18 @@
 package com.svenhandt.app.cinemaapp.view;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
 
 
 public class BookingView
 {
 
 	private int id;
-	private int presentationId;
+	private PresentationView presentationView;
 	private BigDecimal totalPrice;
 	private String totalPriceFormatted;
-	private List<Integer> seatIds;
-	
+	private Map<Integer, SeatView> seatsMap;
+
 
 	public int getId()
 	{
@@ -24,14 +24,14 @@ public class BookingView
 		this.id = id;
 	}
 
-	public int getPresentationId()
+	public PresentationView getPresentationView()
 	{
-		return presentationId;
+		return presentationView;
 	}
 
-	public void setPresentationId(int presentationId)
+	public void setPresentationView(PresentationView presentationView)
 	{
-		this.presentationId = presentationId;
+		this.presentationView = presentationView;
 	}
 
 	public BigDecimal getTotalPrice()
@@ -54,13 +54,13 @@ public class BookingView
 		this.totalPriceFormatted = totalPriceFormatted;
 	}
 
-	public List<Integer> getSeatIds()
+	public Map<Integer, SeatView> getSeatsMap()
 	{
-		return seatIds;
+		return seatsMap;
 	}
 
-	public void setSeatIds(List<Integer> seatIds)
+	public void setSeatsMap(Map<Integer, SeatView> seatsMap)
 	{
-		this.seatIds = seatIds;
+		this.seatsMap = seatsMap;
 	}
 }

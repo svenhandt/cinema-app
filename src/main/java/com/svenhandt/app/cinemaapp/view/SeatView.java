@@ -14,6 +14,18 @@ public class SeatView
 	private int numberInSeatRow;
 	private SeatType seatType;
 
+	public SeatView()
+	{
+
+	}
+
+	public SeatView(int id, int seatRow, int numberInSeatRow)
+	{
+		this.id = id;
+		this.seatRow = seatRow;
+		this.numberInSeatRow = numberInSeatRow;
+	}
+
 	public int getId()
 	{
 		return id;

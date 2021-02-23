@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Kinokasse</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <br/><br/><br/>
+
+            <h2 class="text-center" th:text="${currentBooking.presentationView.filmView.title}"></h2>
+            <h4 class="text-center"
+                th:text="${currentBooking.presentationView.roomView.roomName} + ', ' + ${currentBooking.presentationView.dayOfWeek} + ' ' + ${currentBooking.presentationView.startTime}"></h4>
+            <h6 class="text-center" th:text="${currentBooking.seatsMap.size()} + ' ' + ${currentBooking.seatsMap.size() == 1 ? 'Platz' : 'Plätze'}" />
+
+            <br/><br/>
+            <h5 class="text-center">Bitte geben Sie Ihre Kreditkartendaten ein</h5>
+
+            <br/><br/>
+
+
+            <div class="border-top" />
+
+            <br/><br/>
+
+
+            <div class="col-md-4 offset-md-4">
+
+                <form th:action="@{/booking/save}" th:object="${creditCardForm}" method="POST">
+
+                    <input type="text" th:field="*{cardName}"
+                           class="form-control mb-4" placeholder="Karteninhaber"/>
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('cardName')}" th:errors="*{cardName}" />
+
+                    <input type="text" th:field="*{cardNumber}"
+                           class="form-control mb-4" placeholder="Kartennummer"/>
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}" />
+
+                    <select class="form-control mb-4" th:field="*{expiryMonth}">
+                        <option th:each="month : ${creditCardForm.expiryMonths}" th:value="${month}" th:text="${month}" />
+                    </select>
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('expiryMonth')}" th:errors="*{expiryMonth}" />
+
+                    <select class="form-control mb-4" th:field="*{expiryYear}">
+                        <option th:each="year : ${creditCardForm.expiryYears}" th:value="${year}" th:text="${year}" />
+                    </select>
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('expiryYear')}" th:errors="*{expiryYear}" />
+
+                    <input type="text" th:field="*{cvv}"
+                           class="form-control mb-4" placeholder="Prüfziffer"/>
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('cvv')}" th:errors="*{cvv}" />
+
+                    <button type="submit" class="btn btn-primary">Jetzt buchen</button>
+
+                </form>
+
+            </div>
+
+            <br/><br/>
+
+            <hr/>
+
+            <div class="row">
+                <a href="/">Zurück zur Übersicht</a>
+            </div>
+
+        </div>
+
+    </body>
+
+</html>

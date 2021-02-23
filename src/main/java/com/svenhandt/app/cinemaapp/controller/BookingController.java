@@ -2,6 +2,7 @@ package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.controller.Constants.ControllerConstants;
 import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
+import com.svenhandt.app.cinemaapp.forms.CreditCardForm;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
@@ -12,11 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 
 @Controller
@@ -24,8 +27,6 @@ public class BookingController
 {
 
 	private BookingService bookingService;
-
-	private PresentationDetailsService presentationDetailsService;
 
 	private enum Action
 	{
@@ -48,7 +49,14 @@ public class BookingController
 	public String prepareBookingDataForm(HttpServletRequest httpServletRequest, Model model)
 	{
 		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
-		PresentationView presentationView = presentationDetailsService.getPresentationDetails(bookingView.getPresentationId(), PresentationDetailsOption.BASIC);
+		model.addAttribute("currentBooking", bookingView);
+		model.addAttribute("creditCardForm", new CreditCardForm());
+		return "booking-data-form";
+	}
+
+	@PostMapping("/booking/save")
+	public String saveBooking(@Valid CreditCardForm creditCardForm, Errors errors, HttpServletRequest httpServletRequest, Model model)
+	{
 		return "";
 	}
 
@@ -58,7 +66,7 @@ public class BookingController
 		String bookingId = httpServletRequest.getParameter("bookingId");
 		Validate.notNull(bookingId, "Booking id must not be null");
 		HttpSession session = httpServletRequest.getSession();
-		Object bookingViewObject = session.getAttribute(bookingId);
+		Object bookingViewObject = session.getAttribute(ControllerConstants.BOOKING_PRESENTATION_PREFIX + bookingId);
 		if(bookingViewObject instanceof BookingView)
 		{
 			bookingView = (BookingView)bookingViewObject;
@@ -113,9 +121,4 @@ public class BookingController
 		this.bookingService = bookingService;
 	}
 
-	@Autowired
-	public void setPresentationDetailsService(PresentationDetailsService presentationDetailsService)
-	{
-		this.presentationDetailsService = presentationDetailsService;
-	}
 }

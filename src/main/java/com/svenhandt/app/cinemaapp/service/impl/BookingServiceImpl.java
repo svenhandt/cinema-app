@@ -1,20 +1,21 @@
 package com.svenhandt.app.cinemaapp.service.impl;
 
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
-import com.svenhandt.app.cinemaapp.entity.Film;
+import com.svenhandt.app.cinemaapp.dao.SeatRepository;
 import com.svenhandt.app.cinemaapp.entity.Presentation;
+import com.svenhandt.app.cinemaapp.entity.Seat;
+import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.service.DataTypeConversionService;
+import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
-import com.svenhandt.app.cinemaapp.view.FilmView;
 import com.svenhandt.app.cinemaapp.view.PresentationView;
+import com.svenhandt.app.cinemaapp.view.SeatView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -23,50 +24,59 @@ public class BookingServiceImpl implements BookingService
 
 	private PresentationRepository presentationRepository;
 
+	private SeatRepository seatRepository;
+
 	private DataTypeConversionService dataTypeConversionService;
+
+	private PresentationDetailsService presentationDetailsService;
 
 	@Override
 	public BookingView createInitialBookingView(int presentationId)
 	{
 		BookingView bookingView = new BookingView();
-		bookingView.setPresentationId(presentationId);
+		PresentationView presentationView = presentationDetailsService.getPresentationDetails(presentationId, PresentationDetailsOption.BASIC);
+		bookingView.setPresentationView(presentationView);
 		bookingView.setId(presentationId);
 		bookingView.setTotalPrice(new BigDecimal(0));
-		bookingView.setSeatIds(new ArrayList<>());
+		bookingView.setSeatsMap(new HashMap<>());
 		return bookingView;
 	}
 
 	@Override
 	public void addSeatAndCalculate(BookingView bookingView, int seatId)
 	{
-		bookingView.getSeatIds().add(seatId);
+		Optional<Seat> seatOpt = seatRepository.findById(seatId);
+		if(seatOpt.isPresent())
+		{
+			Seat seat = seatOpt.get();
+			SeatView seatView = new SeatView(seatId, seat.getSeatRow(), seat.getNumberInSeatRow());
+			bookingView.getSeatsMap().put(seatId, seatView);
+		}
 		calculate(bookingView);
 	}
 
 	@Override
 	public void removeSeatAndCalculate(BookingView bookingView, int seatId)
 	{
-		List<Integer> seatIds = bookingView.getSeatIds();
-		for(int i=0; i < seatIds.size(); i++)
+		Map<Integer, SeatView> seatViewsMap = bookingView.getSeatsMap();
+		if(seatViewsMap.containsKey(seatId))
 		{
-			if(seatIds.get(i) == seatId)
-			{
-				seatIds.remove(i);
-			}
+			seatViewsMap.remove(seatId);
 		}
 		calculate(bookingView);
 	}
 
 	private void calculate(BookingView bookingView)
 	{
-		Optional<Presentation> presentationForBookingOpt = presentationRepository.findById(bookingView.getPresentationId());
+		PresentationView presentationView = bookingView.getPresentationView();
+		Optional<Presentation> presentationForBookingOpt = presentationRepository.findById(presentationView.getId());
 		if(presentationForBookingOpt.isPresent())
 		{
 			Presentation presentationForBooking = presentationForBookingOpt.get();
 			BigDecimal newBookingPrice = presentationForBooking.getPrice();
-			newBookingPrice = newBookingPrice.multiply(new BigDecimal(bookingView.getSeatIds().size()));
+			newBookingPrice = newBookingPrice.multiply(new BigDecimal(bookingView.getSeatsMap().size()));
 			bookingView.setTotalPrice(newBookingPrice);
-			if(bookingView.getSeatIds().size() > 0)
+			if(bookingView.getSeatsMap().size() > 0)
 			{
 				bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(newBookingPrice));
 			}
@@ -84,8 +94,20 @@ public class BookingServiceImpl implements BookingService
 	}
 
 	@Autowired
+	public void setSeatRepository(SeatRepository seatRepository)
+	{
+		this.seatRepository = seatRepository;
+	}
+
+	@Autowired
 	public void setDataTypeConversionService(DataTypeConversionService dataTypeConversionService)
 	{
 		this.dataTypeConversionService = dataTypeConversionService;
+	}
+
+	@Autowired
+	public void setPresentationDetailsService(PresentationDetailsService presentationDetailsService)
+	{
+		this.presentationDetailsService = presentationDetailsService;
 	}
 }

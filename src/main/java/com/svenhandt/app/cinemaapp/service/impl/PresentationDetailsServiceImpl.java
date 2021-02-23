@@ -51,7 +51,6 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 		presentationView.setId(presentation.getId());
 		presentationView.setDayOfWeek(dataTypeConversionService.getDayOfWeekAbbrev(presentation.getStartTime()));
 		presentationView.setStartTime(dataTypeConversionService.getTimeOfDayFormatted(presentation.getStartTime()));
-		presentationView.setPrice(presentation.getPrice());
 		setFilmView(presentation, presentationView);
 		presentationView.setRoomView(createRoomView(presentation, option));
 		return presentationView;
