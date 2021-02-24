@@ -6,14 +6,14 @@ import com.svenhandt.app.cinemaapp.view.BookingView;
 public interface BookingService
 {
 
-	BookingView createInitialBookingView(int presentationId);
+	BookingView createInitialSessionBookingView(int presentationId);
 
 	void addSeatAndCalculate(BookingView bookingView, int seatId);
 
 	void removeSeatAndCalculate(BookingView bookingView, int seatId);
 
-	String maskCreditCardNumber(String creditCardNumber);
+	int saveBooking(BookingView bookingView);
 
-	BookingView saveBooking(BookingView bookingView);
+	BookingView getForBookingId(int bookingId);
 
 }

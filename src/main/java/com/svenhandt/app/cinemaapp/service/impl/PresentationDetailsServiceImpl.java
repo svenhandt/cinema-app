@@ -1,5 +1,6 @@
 package com.svenhandt.app.cinemaapp.service.impl;
 
+import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.BookingRepository;
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
 import com.svenhandt.app.cinemaapp.dao.SeatRepository;
@@ -32,21 +33,19 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 	@Override
 	public PresentationView getPresentationDetails(int presentationId, PresentationDetailsOption option)
 	{
-		PresentationView presentationView = null;
+		PresentationView presentationView;
 		Optional<Presentation> presentationOptional = presentationRepository.findById(presentationId);
-		if(presentationOptional.isPresent())
-		{
-			Presentation presentation = presentationOptional.get();
-			presentationView = createPresentationDetails(presentation, option);
-		}
+		Validate.isTrue(presentationOptional.isPresent(), ApplicationConstants.NO_PRESENTATION_FOR_ID + presentationId);
+		Presentation presentation = presentationOptional.get();
+		presentationView = createPresentationDetails(presentation, option);
 		return presentationView;
 	}
 
 	private PresentationView createPresentationDetails(Presentation presentation, PresentationDetailsOption option)
 	{
-		Validate.notNull(presentation.getRoom(), "Presentation must have a room");
-		Validate.notNull(presentation.getFilm(), "Presentation must have a film");
-		Validate.notNull(presentation.getPrice(), "Presentation must have a price");
+		Validate.notNull(presentation.getRoom(), ApplicationConstants.PRESENTATION_MUST_HAVE_ROOM);
+		Validate.notNull(presentation.getFilm(), ApplicationConstants.PRESENTATION_MUST_HAVE_FILM);
+		Validate.notNull(presentation.getPrice(), ApplicationConstants.PRESENTATION_MUST_HAVE_PRICE);
 		PresentationView presentationView = new PresentationView();
 		presentationView.setId(presentation.getId());
 		presentationView.setDayOfWeek(dataTypeConversionService.getDayOfWeekAbbrev(presentation.getStartTime()));

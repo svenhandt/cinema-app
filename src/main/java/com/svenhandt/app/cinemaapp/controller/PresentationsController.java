@@ -1,6 +1,6 @@
 package com.svenhandt.app.cinemaapp.controller;
 
-import com.svenhandt.app.cinemaapp.controller.Constants.ControllerConstants;
+import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
@@ -55,11 +55,11 @@ public class PresentationsController
 	{
 		BookingView bookingView = null;
 		HttpSession currentSession = httpServletRequest.getSession();
-		Object bookingViewObj = currentSession.getAttribute(ControllerConstants.BOOKING_PRESENTATION_PREFIX + presentationId);
+		Object bookingViewObj = currentSession.getAttribute(ApplicationConstants.BOOKING_PRESENTATION_PREFIX + presentationId);
 		if(bookingViewObj == null)
 		{
-			bookingView = bookingService.createInitialBookingView(presentationId);
-			currentSession.setAttribute(ControllerConstants.BOOKING_PRESENTATION_PREFIX + presentationId, bookingView);
+			bookingView = bookingService.createInitialSessionBookingView(presentationId);
+			currentSession.setAttribute(ApplicationConstants.BOOKING_PRESENTATION_PREFIX + presentationId, bookingView);
 		}
 		else if(bookingViewObj instanceof BookingView)
 		{

@@ -1,5 +1,6 @@
 package com.svenhandt.app.cinemaapp.service.impl;
 
+import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
 import com.svenhandt.app.cinemaapp.entity.Film;
 import com.svenhandt.app.cinemaapp.entity.Presentation;
@@ -42,7 +43,7 @@ public class PresentationListServiceImpl implements PresentationListService
 
 	private FilmPresentationsMatrixView getOrCreateFilmView(Map<Integer, FilmPresentationsMatrixView> filmViewsMap, Film film)
 	{
-		Validate.notNull(film, "Film of presentation must not be null");
+		Validate.notNull(film, ApplicationConstants.PRESENTATION_MUST_HAVE_FILM);
 		FilmPresentationsMatrixView filmPresentationsMatrixView;
 		int filmId = film.getId();
 		if(filmViewsMap.containsKey(filmId))
