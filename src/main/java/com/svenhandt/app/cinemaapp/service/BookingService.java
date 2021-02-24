@@ -12,4 +12,8 @@ public interface BookingService
 
 	void removeSeatAndCalculate(BookingView bookingView, int seatId);
 
+	String maskCreditCardNumber(String creditCardNumber);
+
+	BookingView saveBooking(BookingView bookingView);
+
 }

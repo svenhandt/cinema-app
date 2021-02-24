@@ -12,6 +12,8 @@ public class BookingView
 	private BigDecimal totalPrice;
 	private String totalPriceFormatted;
 	private Map<Integer, SeatView> seatsMap;
+	private String name;
+	private String creditCardNo;
 
 
 	public int getId()
@@ -62,5 +64,25 @@ public class BookingView
 	public void setSeatsMap(Map<Integer, SeatView> seatsMap)
 	{
 		this.seatsMap = seatsMap;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String getCreditCardNo()
+	{
+		return creditCardNo;
+	}
+
+	public void setCreditCardNo(String creditCardNo)
+	{
+		this.creditCardNo = creditCardNo;
 	}
 }

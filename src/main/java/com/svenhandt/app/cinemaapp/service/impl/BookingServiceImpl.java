@@ -2,6 +2,7 @@ package com.svenhandt.app.cinemaapp.service.impl;
 
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
 import com.svenhandt.app.cinemaapp.dao.SeatRepository;
+import com.svenhandt.app.cinemaapp.entity.Booking;
 import com.svenhandt.app.cinemaapp.entity.Presentation;
 import com.svenhandt.app.cinemaapp.entity.Seat;
 import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
@@ -11,6 +12,7 @@ import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
 import com.svenhandt.app.cinemaapp.view.PresentationView;
 import com.svenhandt.app.cinemaapp.view.SeatView;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +54,10 @@ public class BookingServiceImpl implements BookingService
 			SeatView seatView = new SeatView(seatId, seat.getSeatRow(), seat.getNumberInSeatRow());
 			bookingView.getSeatsMap().put(seatId, seatView);
 		}
+		else
+		{
+			throw new IllegalStateException("No seat in system for id " + seatId);
+		}
 		calculate(bookingView);
 	}
 
@@ -64,6 +70,44 @@ public class BookingServiceImpl implements BookingService
 			seatViewsMap.remove(seatId);
 		}
 		calculate(bookingView);
+	}
+
+	@Override
+	public String maskCreditCardNumber(String creditCardNumber)
+	{
+		return StringUtils.substring(creditCardNumber, 0, 4) + "************";
+	}
+
+	@Override
+	public BookingView saveBooking(BookingView bookingView)
+	{
+		Booking booking = new Booking();
+		booking.setName(bookingView.getName());
+		booking.setCreditCardNo(bookingView.getCreditCardNo());
+		booking.setPresentation(getPresentation(bookingView));
+		return bookingView;
+	}
+
+	private Presentation getPresentation(BookingView bookingView)
+	{
+		Optional<Presentation> presentationOpt = presentationRepository.findById(bookingView.getId());
+		if(presentationOpt.isPresent())
+		{
+			return presentationOpt.get();
+		}
+		else
+		{
+			throw new IllegalStateException("No presentation in system for id " + bookingView.getId());
+		}
+	}
+
+	private List<Seat> getSeats(BookingView bookingView)
+	{
+		List<Seat> seats = new ArrayList<>();
+		for(int seatId : bookingView.getSeatsMap().keySet())
+		{
+
+		}
 	}
 
 	private void calculate(BookingView bookingView)
@@ -86,6 +130,8 @@ public class BookingServiceImpl implements BookingService
 			}
 		}
 	}
+
+
 
 	@Autowired
 	public void setPresentationRepository(PresentationRepository presentationRepository)

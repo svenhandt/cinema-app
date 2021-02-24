@@ -38,6 +38,8 @@
 
                 <form th:action="@{/booking/save}" th:object="${creditCardForm}" method="POST">
 
+                    <input type="hidden" name="bookingId" th:value="${currentBooking.id}" />
+
                     <input type="text" th:field="*{cardName}"
                            class="form-control mb-4" placeholder="Karteninhaber"/>
                     <p class="alert alert-danger" th:if="${#fields.hasErrors('cardName')}" th:errors="*{cardName}" />
@@ -46,15 +48,14 @@
                            class="form-control mb-4" placeholder="Kartennummer"/>
                     <p class="alert alert-danger" th:if="${#fields.hasErrors('cardNumber')}" th:errors="*{cardNumber}" />
 
-                    <select class="form-control mb-4" th:field="*{expiryMonth}">
-                        <option th:each="month : ${creditCardForm.expiryMonths}" th:value="${month}" th:text="${month}" />
+                    <select class="form-control mb-4" th:field="*{expiryDate.expiryMonth}">
+                        <option th:each="month : ${creditCardForm.expiryDate.expiryMonths}" th:value="${month}" th:text="${month}" />
                     </select>
-                    <p class="alert alert-danger" th:if="${#fields.hasErrors('expiryMonth')}" th:errors="*{expiryMonth}" />
 
-                    <select class="form-control mb-4" th:field="*{expiryYear}">
-                        <option th:each="year : ${creditCardForm.expiryYears}" th:value="${year}" th:text="${year}" />
+                    <select class="form-control mb-4" th:field="*{expiryDate.expiryYear}">
+                        <option th:each="year : ${creditCardForm.expiryDate.expiryYears}" th:value="${year}" th:text="${year}" />
                     </select>
-                    <p class="alert alert-danger" th:if="${#fields.hasErrors('expiryYear')}" th:errors="*{expiryYear}" />
+                    <p class="alert alert-danger" th:if="${#fields.hasErrors('expiryDate')}" th:errors="*{expiryDate}" />
 
                     <input type="text" th:field="*{cvv}"
                            class="form-control mb-4" placeholder="Prüfziffer"/>

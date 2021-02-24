@@ -1,19 +1,16 @@
 package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.controller.Constants.ControllerConstants;
-import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
-import com.svenhandt.app.cinemaapp.forms.CreditCardForm;
+import com.svenhandt.app.cinemaapp.forms.creditcardform.CreditCardForm;
 import com.svenhandt.app.cinemaapp.service.BookingService;
-import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
-import com.svenhandt.app.cinemaapp.view.PresentationView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,16 +45,33 @@ public class BookingController
 	@PostMapping("/booking/prepare")
 	public String prepareBookingDataForm(HttpServletRequest httpServletRequest, Model model)
 	{
-		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
-		model.addAttribute("currentBooking", bookingView);
+		prepareBookingFormPage(httpServletRequest, model);
 		model.addAttribute("creditCardForm", new CreditCardForm());
 		return "booking-data-form";
 	}
 
 	@PostMapping("/booking/save")
-	public String saveBooking(@Valid CreditCardForm creditCardForm, Errors errors, HttpServletRequest httpServletRequest, Model model)
+	public String saveBooking(@Valid CreditCardForm creditCardForm, BindingResult bindingResult, HttpServletRequest httpServletRequest, Model model)
 	{
-		return "";
+		String targetPage = "";
+		if(bindingResult.hasErrors())
+		{
+			prepareBookingFormPage(httpServletRequest, model);
+			targetPage = "booking-data-form";
+		}
+		else
+		{
+			BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
+			bookingView.setName(creditCardForm.getCardName());
+			bookingView.setCreditCardNo(bookingService.maskCreditCardNumber(creditCardForm.getCardNumber()));
+		}
+		return targetPage;
+	}
+
+	private void prepareBookingFormPage(HttpServletRequest httpServletRequest, Model model)
+	{
+		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
+		model.addAttribute("currentBooking", bookingView);
 	}
 
 	private BookingView getBookingViewFromRequestParam(HttpServletRequest httpServletRequest)
@@ -114,6 +128,8 @@ public class BookingController
 		}
 		return result;
 	}
+
+
 
 	@Autowired
 	public void setBookingService(BookingService bookingService)
