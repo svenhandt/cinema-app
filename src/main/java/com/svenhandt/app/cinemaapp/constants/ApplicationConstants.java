@@ -12,5 +12,6 @@ public class ApplicationConstants
 	public static final String PRESENTATION_MUST_HAVE_PRICE = "Presentation must have a price";
 	public static final String PRESENTATION_MUST_HAVE_FILM = "Presentation must have a film";
 	public static final String NO_BOOKING_IN_SESSION = "No booking in session - invalid state";
+	public static final String SEATS_MUST_NOT_BE_NULL = "Seats must not be null";
 
 }

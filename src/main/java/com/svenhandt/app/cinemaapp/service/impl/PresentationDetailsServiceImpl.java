@@ -69,9 +69,7 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 	private RoomView createRoomView(Presentation presentation, PresentationDetailsOption option)
 	{
 		Room room = presentation.getRoom();
-		RoomView roomView = new RoomView();
-		roomView.setRoomId(room.getId());
-		roomView.setRoomName(room.getName());
+		RoomView roomView = new RoomView(room.getId(), room.getName());
 		if(PresentationDetailsOption.FULL.equals(option))
 		{
 			List<Seat> seatsForRoom = seatsService.findAllByRoomOrderByRowsAndNumbers(room);
@@ -84,16 +82,8 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 
 	Map<Integer, Seat> getOccuppiedSeatsMap(Presentation presentation)
 	{
-		Map<Integer, Seat> occupiedSeatsMap = new HashMap<>();
 		List<Booking> bookings4Presentation = bookingRepository.findAllByPresentation(presentation);
-		for(Booking booking : bookings4Presentation)
-		{
-			for(Seat seat : booking.getSeats())
-			{
-				occupiedSeatsMap.put(seat.getId(), seat);
-			}
-		}
-		return occupiedSeatsMap;
+		return seatsService.getBookingsOccuppiedSeats(bookings4Presentation);
 	}
 
 	@Autowired

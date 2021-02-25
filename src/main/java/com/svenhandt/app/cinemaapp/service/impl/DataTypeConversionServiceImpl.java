@@ -18,6 +18,19 @@ public class DataTypeConversionServiceImpl implements DataTypeConversionService
 	private static final String MINUTE_NOT_VALID = "minute not valid: ";
 
 	@Override
+	public Date getFromWeekAndDay(String dayOfWeekStr, String startTimeStr)
+	{
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(dayOfWeekStr));
+		String[] startTimeArr = StringUtils.split(startTimeStr, ":");
+		Validate.isTrue(startTimeArr.length == 2, "Start time format invalid: " + startTimeStr);
+		calendar.set(Calendar.HOUR_OF_DAY, getHourOfDay(startTimeArr[0]));
+		calendar.set(Calendar.MINUTE, getMinute(startTimeArr[1]));
+		return calendar.getTime();
+	}
+
+	@Override
 	public String getDayOfWeekAbbrev(Date date)
 	{
 		String result = StringUtils.EMPTY;
@@ -63,7 +76,14 @@ public class DataTypeConversionServiceImpl implements DataTypeConversionService
 	}
 
 	@Override
-	public int getDayOfWeek(String dayOfWeekStr)
+	public BigDecimal getPrice(String priceStr)
+	{
+		Validate.matchesPattern(priceStr, "\\d+\\.\\d{2}");
+		BigDecimal price = new BigDecimal(priceStr);
+		return price;
+	}
+
+	private int getDayOfWeek(String dayOfWeekStr)
 	{
 		int dayOfWeek;
 		if(StringUtils.equals(dayOfWeekStr, "Mo"))
@@ -101,8 +121,7 @@ public class DataTypeConversionServiceImpl implements DataTypeConversionService
 		return dayOfWeek;
 	}
 
-	@Override
-	public int getHourOfDay(String hourOfDayStr)
+	private int getHourOfDay(String hourOfDayStr)
 	{
 		Validate.matchesPattern(hourOfDayStr, "\\d{2}", HOUR_OF_DAY_NOT_VALID + hourOfDayStr);
 		int hourOfDay = Integer.parseInt(hourOfDayStr);
@@ -110,21 +129,12 @@ public class DataTypeConversionServiceImpl implements DataTypeConversionService
 		return hourOfDay;
 	}
 
-	@Override
-	public int getMinute(String minuteStr)
+	private int getMinute(String minuteStr)
 	{
 		Validate.matchesPattern(minuteStr, "\\d{2}", MINUTE_NOT_VALID + minuteStr);
 		int minute = Integer.parseInt(minuteStr);
 		Validate.inclusiveBetween(0, 59, minute, MINUTE_NOT_VALID);
 		return minute;
-	}
-
-	@Override
-	public BigDecimal getPrice(String priceStr)
-	{
-		Validate.matchesPattern(priceStr, "\\d+\\.\\d{2}");
-		BigDecimal price = new BigDecimal(priceStr);
-		return price;
 	}
 
 	@Override

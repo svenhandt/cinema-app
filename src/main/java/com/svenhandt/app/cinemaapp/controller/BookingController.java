@@ -1,6 +1,7 @@
 package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
+import com.svenhandt.app.cinemaapp.entity.Booking;
 import com.svenhandt.app.cinemaapp.forms.creditcardform.CreditCardForm;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
@@ -75,7 +76,9 @@ public class BookingController
 	@GetMapping("/booking/confirmation")
 	public String bookingConfirmation(@RequestParam("bookingId") int bookingId, Model model)
 	{
-		return "";
+		BookingView bookingView = bookingService.getForBookingId(bookingId);
+		model.addAttribute("booking", bookingView);
+		return "booking-confirmation";
 	}
 
 	private void prepareBookingFormPage(HttpServletRequest httpServletRequest, Model model)

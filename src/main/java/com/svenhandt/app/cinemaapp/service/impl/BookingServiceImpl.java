@@ -47,8 +47,7 @@ public class BookingServiceImpl implements BookingService
 	@Override
 	public void addSeatAndCalculate(BookingView bookingView, int seatId)
 	{
-		Seat seat = seatsService.findById(seatId);
-		SeatView seatView = new SeatView(seatId, seat.getSeatRow(), seat.getNumberInSeatRow());
+		SeatView seatView = seatsService.getSeatViewForId(seatId);
 		bookingView.getSeatsMap().put(seatId, seatView);
 		calculate(bookingView);
 	}
@@ -87,8 +86,12 @@ public class BookingServiceImpl implements BookingService
 		bookingView.setId(bookingId);
 		bookingView.setPresentationView(
 				presentationDetailsService.getPresentationDetails(booking.getPresentation().getId(), PresentationDetailsOption.BASIC));
-
-		return null;
+		bookingView.setSeatsMap(seatsService.getSeatViewsMap(booking.getSeats()));
+		bookingView.setTotalPrice(booking.getTotalPrice());
+		bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(booking.getTotalPrice()));
+		bookingView.setCreditCardNo(booking.getCreditCardNo());
+		bookingView.setName(booking.getName());
+		return bookingView;
 	}
 
 	private void calculate(BookingView bookingView)

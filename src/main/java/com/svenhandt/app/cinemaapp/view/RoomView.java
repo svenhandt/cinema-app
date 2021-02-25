@@ -9,6 +9,17 @@ public class RoomView
 	private String roomName;
 	private Map<Integer, SeatRowView> numberSeatRowMapping;
 
+	public RoomView()
+	{
+
+	}
+
+	public RoomView(int roomId, String roomName)
+	{
+		this.roomId = roomId;
+		this.roomName = roomName;
+	}
+
 	public int getRoomId()
 	{
 		return roomId;

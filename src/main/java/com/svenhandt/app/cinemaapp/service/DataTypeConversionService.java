@@ -11,11 +11,7 @@ public interface DataTypeConversionService
 
 	String getTimeOfDayFormatted(Date date);
 
-	int getDayOfWeek(String dayOfWeekStr);
-
-	int getHourOfDay(String hourOfDayStr);
-
-	int getMinute(String minuteStr);
+	Date getFromWeekAndDay(String dayOfWeekStr, String startTimeStr);
 
 	BigDecimal getPrice(String priceStr);
 

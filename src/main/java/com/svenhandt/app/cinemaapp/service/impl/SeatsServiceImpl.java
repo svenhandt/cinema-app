@@ -2,6 +2,7 @@ package com.svenhandt.app.cinemaapp.service.impl;
 
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.SeatRepository;
+import com.svenhandt.app.cinemaapp.entity.Booking;
 import com.svenhandt.app.cinemaapp.entity.Room;
 import com.svenhandt.app.cinemaapp.entity.Seat;
 import com.svenhandt.app.cinemaapp.enums.SeatType;
@@ -31,11 +32,12 @@ public class SeatsServiceImpl implements SeatsService
 	}
 
 	@Override
-	public Seat findById(int seatId)
+	public SeatView getSeatViewForId(int seatId)
 	{
 		Optional<Seat> seatOpt = seatRepository.findById(seatId);
 		Validate.isTrue(seatOpt.isPresent(), ApplicationConstants.NO_SEAT_FOR_ID + seatId);
-		return seatOpt.get();
+		Seat seat = seatOpt.get();
+		return new SeatView(seatId, seat.getSeatRow(), seat.getNumberInSeatRow());
 	}
 
 	@Override
@@ -73,6 +75,32 @@ public class SeatsServiceImpl implements SeatsService
 		{
 			seatViewsMap.remove(seatId);
 		}
+	}
+
+	@Override
+	public Map<Integer, SeatView> getSeatViewsMap(List<Seat> seats)
+	{
+		Validate.notNull(seats, ApplicationConstants.SEATS_MUST_NOT_BE_NULL);
+		Map<Integer, SeatView> seatViewsMap = new HashMap<>();
+		for(Seat seat : seats)
+		{
+			seatViewsMap.put(seat.getId(), new SeatView(seat.getId(), seat.getSeatRow(), seat.getNumberInSeatRow()));
+		}
+		return seatViewsMap;
+	}
+
+	@Override
+	public Map<Integer, Seat> getBookingsOccuppiedSeats(List<Booking> bookings)
+	{
+		Map<Integer, Seat> occupiedSeatsMap = new HashMap<>();
+		for(Booking booking : bookings)
+		{
+			for(Seat seat : booking.getSeats())
+			{
+				occupiedSeatsMap.put(seat.getId(), seat);
+			}
+		}
+		return occupiedSeatsMap;
 	}
 
 	private void actualizeNumberSeatRowMapping(Map<Integer, SeatRowView> numberSeatRowMapping, Seat seat, Map<Integer, Seat> occuppiedSeats)

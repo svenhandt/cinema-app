@@ -27,8 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -145,21 +143,9 @@ public class InitPresentationsServiceImpl implements InitPresentationsService
 		Presentation presentation = new Presentation();
 		Room room = roomRepository.findByName(roomName);
 		presentation.setRoom(room);
-		presentation.setStartTime(getPresentationStartTime(dayOfWeekStr, startTimeStr));
+		presentation.setStartTime(dataTypeConversionService.getFromWeekAndDay(dayOfWeekStr, startTimeStr));
 		presentation.setPrice(dataTypeConversionService.getPrice(priceStr));
 		return presentation;
-	}
-
-	private Date getPresentationStartTime(String dayOfWeekStr, String startTimeStr)
-	{
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.set(Calendar.DAY_OF_WEEK, dataTypeConversionService.getDayOfWeek(dayOfWeekStr));
-		String[] startTimeArr = StringUtils.split(startTimeStr, ":");
-		Validate.isTrue(startTimeArr.length == 2, "Start time format invalid: " + startTimeStr);
-		calendar.set(Calendar.HOUR_OF_DAY, dataTypeConversionService.getHourOfDay(startTimeArr[0]));
-		calendar.set(Calendar.MINUTE, dataTypeConversionService.getMinute(startTimeArr[1]));
-		return calendar.getTime();
 	}
 
 	@Autowired

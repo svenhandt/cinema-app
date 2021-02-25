@@ -70,7 +70,7 @@ public class PresentationListServiceImpl implements PresentationListService
 		createPresentrationsMapIfNull(filmPresentationsMatrixView);
 		String dayOfWeek = dataTypeConversionService.getDayOfWeekAbbrev(presentation.getStartTime());
 		List<PresentationView> presentationViews = getPresentationViews(filmPresentationsMatrixView, dayOfWeek);
-		PresentationView presentationView = createPresentationView(dayOfWeek, presentation);
+		PresentationView presentationView = createListPresentationView(dayOfWeek, presentation);
 		presentationViews.add(presentationView);
 	}
 
@@ -99,7 +99,7 @@ public class PresentationListServiceImpl implements PresentationListService
 		return result;
 	}
 
-	private PresentationView createPresentationView(String dayOfWeek, Presentation presentation)
+	private PresentationView createListPresentationView(String dayOfWeek, Presentation presentation)
 	{
 		PresentationView presentationView = new PresentationView();
 		presentationView.setId(presentation.getId());

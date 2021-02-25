@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Kinokasse</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    </head>
+
+<body>
+
+    <div class="container">
+
+        <br/><br/><br/>
+
+        <h2 class="text-center">Vielen Dank!</h2>
+        <h4 class="text-center">Nachfolgend finden Sie Ihre Buchungsdaten</h4>
+
+        <br/><br/><br/>
+
+        <div class="border-top" />
+
+        <table class="table table-striped">
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Film:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.presentationView.filmView.title}" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Saal:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.presentationView.roomView.roomName}" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Beginn der Veranstaltung:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.presentationView.dayOfWeek} + ', ' + ${booking.presentationView.startTime}" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Plätze:</p>
+                </td>
+                <td>
+                    <ol>
+                        <li th:each="seatEntry : ${booking.seatsMap}">
+                            <p th:text="'Reihe: ' + ${seatEntry.value.numberInSeatRow} + ', Nummer: ' + ${seatEntry.value.numberInSeatRow}" />
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Name:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.name}" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Kreditkarteninformation:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.creditCardNo}" />
+                </td>
+            </tr>
+
+        </table>
+
+        <hr/>
+
+        <div class="row">
+            <a href="/">Zurück zur Übersicht</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
