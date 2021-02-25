@@ -3,19 +3,23 @@ package com.svenhandt.app.cinemaapp.service.impl;
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.BookingRepository;
 import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
-import com.svenhandt.app.cinemaapp.dao.SeatRepository;
 import com.svenhandt.app.cinemaapp.entity.*;
 import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
-import com.svenhandt.app.cinemaapp.enums.SeatType;
 import com.svenhandt.app.cinemaapp.service.DataTypeConversionService;
 import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
-import com.svenhandt.app.cinemaapp.view.*;
+import com.svenhandt.app.cinemaapp.service.SeatsService;
+import com.svenhandt.app.cinemaapp.view.FilmView;
+import com.svenhandt.app.cinemaapp.view.PresentationView;
+import com.svenhandt.app.cinemaapp.view.RoomView;
+import com.svenhandt.app.cinemaapp.view.SeatRowView;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -24,9 +28,9 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 
 	private PresentationRepository presentationRepository;
 
-	private SeatRepository seatRepository;
-
 	private BookingRepository bookingRepository;
+
+	private SeatsService seatsService;
 
 	private DataTypeConversionService dataTypeConversionService;
 
@@ -70,9 +74,9 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 		roomView.setRoomName(room.getName());
 		if(PresentationDetailsOption.FULL.equals(option))
 		{
-			List<Seat> seatsForRoom = seatRepository.findAllByRoom(room, Sort.by(Sort.Direction.ASC, "seatRow", "numberInSeatRow"));
+			List<Seat> seatsForRoom = seatsService.findAllByRoomOrderByRowsAndNumbers(room);
 			Map<Integer, Seat> presentationOccuppiedSeats = getOccuppiedSeatsMap(presentation);
-			Map<Integer, SeatRowView> numberSeatRowMapping = createNumberSeatRowMapping(presentationOccuppiedSeats, seatsForRoom);
+			Map<Integer, SeatRowView> numberSeatRowMapping = seatsService.createNumberSeatRowMapping(presentationOccuppiedSeats, seatsForRoom);
 			roomView.setNumberSeatRowMapping(numberSeatRowMapping);
 		}
 		return roomView;
@@ -92,79 +96,6 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 		return occupiedSeatsMap;
 	}
 
-	private Map<Integer, SeatRowView> createNumberSeatRowMapping(Map<Integer, Seat> presentationOccuppiedSeats, List<Seat> seatsForRoom)
-	{
-		Map<Integer, SeatRowView> numberSeatRowMapping = new LinkedHashMap<>();
-		Optional<Integer> maxNumberInSeatRowOpt = seatsForRoom.stream().map(Seat::getNumberInSeatRow).max(Integer::compareTo);
-		if(maxNumberInSeatRowOpt.isPresent())
-		{
-			for(Seat seat : seatsForRoom)
-			{
-				actualizeNumberSeatRowMapping(numberSeatRowMapping, seat, presentationOccuppiedSeats);
-			}
-		}
-		return numberSeatRowMapping;
-	}
-
-	private void actualizeNumberSeatRowMapping(Map<Integer, SeatRowView> numberSeatRowMapping, Seat seat, Map<Integer, Seat> presentationOccuppiedSeats)
-	{
-		int currentSeatRow = seat.getSeatRow();
-		boolean newRow = addNewSeatRowIfNew(numberSeatRowMapping, currentSeatRow);
-		SeatRowView seatRowView = numberSeatRowMapping.get(currentSeatRow);
-		if(newRow)
-		{
-			fillSeatRowWithNoneSeats(seatRowView, currentSeatRow, 1, seat.getNumberInSeatRow());
-		}
-		SeatView seatView = createSeatView(seat, presentationOccuppiedSeats);
-		seatRowView.getSeatViews().add(seatView);
-	}
-
-	private boolean addNewSeatRowIfNew(Map<Integer, SeatRowView> numberSeatRowMapping, int currentSeatRow)
-	{
-		boolean newRow = false;
-		if(!numberSeatRowMapping.containsKey(currentSeatRow))
-		{
-			SeatRowView seatRowView = new SeatRowView(new ArrayList<>());
-			numberSeatRowMapping.put(currentSeatRow, seatRowView);
-			newRow = true;
-		}
-		return newRow;
-	}
-
-	private void fillSeatRowWithNoneSeats(SeatRowView seatRowView, int currentSeatRow, int startIndex, int endIndex)
-	{
-		for(int i = startIndex; i < endIndex; i++)
-		{
-			SeatView seatView = new SeatView();
-			seatView.setSeatRow(currentSeatRow);
-			seatView.setNumberInSeatRow(i);
-			seatView.setSeatType(SeatType.NONE);
-			seatRowView.getSeatViews().add(seatView);
-		}
-	}
-
-	private SeatView createSeatView(Seat seat, Map<Integer, Seat> presentationOccuppiedSeats)
-	{
-		SeatView seatView = new SeatView();
-		seatView.setId(seat.getId());
-		seatView.setSeatRow(seat.getSeatRow());
-		seatView.setNumberInSeatRow(seat.getNumberInSeatRow());
-		seatView.setSeatType(getSeatType(seat, presentationOccuppiedSeats));
-		return seatView;
-	}
-
-	private SeatType getSeatType(Seat seat, Map<Integer, Seat> presentationOccuppiedSeats)
-	{
-		if(presentationOccuppiedSeats.containsKey(seat.getId()))
-		{
-			return SeatType.OCCUPPIED;
-		}
-		else
-		{
-			return SeatType.AVAILABLE;
-		}
-	}
-
 	@Autowired
 	public void setPresentationRepository(PresentationRepository presentationRepository)
 	{
@@ -172,9 +103,9 @@ public class PresentationDetailsServiceImpl implements PresentationDetailsServic
 	}
 
 	@Autowired
-	public void setSeatRepository(SeatRepository seatRepository)
+	public void setSeatsService(SeatsService seatsService)
 	{
-		this.seatRepository = seatRepository;
+		this.seatsService = seatsService;
 	}
 
 	@Autowired

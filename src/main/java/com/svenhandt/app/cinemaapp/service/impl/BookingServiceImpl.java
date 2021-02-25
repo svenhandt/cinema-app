@@ -2,15 +2,11 @@ package com.svenhandt.app.cinemaapp.service.impl;
 
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.BookingRepository;
-import com.svenhandt.app.cinemaapp.dao.PresentationRepository;
-import com.svenhandt.app.cinemaapp.dao.SeatRepository;
 import com.svenhandt.app.cinemaapp.entity.Booking;
 import com.svenhandt.app.cinemaapp.entity.Presentation;
 import com.svenhandt.app.cinemaapp.entity.Seat;
 import com.svenhandt.app.cinemaapp.enums.PresentationDetailsOption;
-import com.svenhandt.app.cinemaapp.service.BookingService;
-import com.svenhandt.app.cinemaapp.service.DataTypeConversionService;
-import com.svenhandt.app.cinemaapp.service.PresentationDetailsService;
+import com.svenhandt.app.cinemaapp.service.*;
 import com.svenhandt.app.cinemaapp.view.BookingView;
 import com.svenhandt.app.cinemaapp.view.PresentationView;
 import com.svenhandt.app.cinemaapp.view.SeatView;
@@ -26,15 +22,15 @@ import java.util.*;
 public class BookingServiceImpl implements BookingService
 {
 
-	private PresentationRepository presentationRepository;
-
-	private SeatRepository seatRepository;
-
 	private BookingRepository bookingRepository;
 
 	private DataTypeConversionService dataTypeConversionService;
 
 	private PresentationDetailsService presentationDetailsService;
+
+	private CommonPresentationService commonPresentationService;
+
+	private SeatsService seatsService;
 
 	@Override
 	public BookingView createInitialSessionBookingView(int presentationId)
@@ -51,9 +47,7 @@ public class BookingServiceImpl implements BookingService
 	@Override
 	public void addSeatAndCalculate(BookingView bookingView, int seatId)
 	{
-		Optional<Seat> seatOpt = seatRepository.findById(seatId);
-		Validate.isTrue(seatOpt.isPresent(), ApplicationConstants.NO_SEAT_FOR_ID + seatId);
-		Seat seat = seatOpt.get();
+		Seat seat = seatsService.findById(seatId);
 		SeatView seatView = new SeatView(seatId, seat.getSeatRow(), seat.getNumberInSeatRow());
 		bookingView.getSeatsMap().put(seatId, seatView);
 		calculate(bookingView);
@@ -63,10 +57,7 @@ public class BookingServiceImpl implements BookingService
 	public void removeSeatAndCalculate(BookingView bookingView, int seatId)
 	{
 		Map<Integer, SeatView> seatViewsMap = bookingView.getSeatsMap();
-		if(seatViewsMap.containsKey(seatId))
-		{
-			seatViewsMap.remove(seatId);
-		}
+		seatsService.removeSeatInView(seatViewsMap, seatId);
 		calculate(bookingView);
 	}
 
@@ -76,8 +67,8 @@ public class BookingServiceImpl implements BookingService
 		Booking booking = new Booking();
 		booking.setName(bookingView.getName());
 		booking.setCreditCardNo(bookingView.getCreditCardNo());
-		Presentation presentation = getPresentation(bookingView);
-		List<Seat> seats = getSeats(bookingView);
+		Presentation presentation = commonPresentationService.getPresentation(bookingView.getId());
+		List<Seat> seats = seatsService.getSeats(bookingView.getSeatsMap());
 		booking.setPresentation(presentation);
 		booking.setSeats(seats);
 		Validate.notNull(presentation.getPrice(), ApplicationConstants.PRESENTATION_MUST_HAVE_PRICE);
@@ -100,66 +91,27 @@ public class BookingServiceImpl implements BookingService
 		return null;
 	}
 
-
-
-	private Presentation getPresentation(BookingView bookingView)
-	{
-		Optional<Presentation> presentationOpt = presentationRepository.findById(bookingView.getId());
-		if(presentationOpt.isPresent())
-		{
-			return presentationOpt.get();
-		}
-		else
-		{
-			throw new IllegalStateException(ApplicationConstants.NO_PRESENTATION_FOR_ID + bookingView.getId());
-		}
-	}
-
-	private List<Seat> getSeats(BookingView bookingView)
-	{
-		List<Seat> seats = new ArrayList<>();
-		for(int seatId : bookingView.getSeatsMap().keySet())
-		{
-			Optional<Seat> seatOptional = seatRepository.findById(seatId);
-			Validate.isTrue(seatOptional.isPresent(), ApplicationConstants.NO_SEAT_FOR_ID + seatId);
-			seats.add(seatOptional.get());
-		}
-		return seats;
-	}
-
 	private void calculate(BookingView bookingView)
 	{
 		PresentationView presentationView = bookingView.getPresentationView();
-		Optional<Presentation> presentationForBookingOpt = presentationRepository.findById(presentationView.getId());
-		if(presentationForBookingOpt.isPresent())
+		Presentation presentationForBooking = commonPresentationService.getPresentation(presentationView.getId());
+		BigDecimal newBookingPrice = presentationForBooking.getPrice();
+		newBookingPrice = newBookingPrice.multiply(new BigDecimal(bookingView.getSeatsMap().size()));
+		bookingView.setTotalPrice(newBookingPrice);
+		if(bookingView.getSeatsMap().size() > 0)
 		{
-			Presentation presentationForBooking = presentationForBookingOpt.get();
-			BigDecimal newBookingPrice = presentationForBooking.getPrice();
-			newBookingPrice = newBookingPrice.multiply(new BigDecimal(bookingView.getSeatsMap().size()));
-			bookingView.setTotalPrice(newBookingPrice);
-			if(bookingView.getSeatsMap().size() > 0)
-			{
-				bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(newBookingPrice));
-			}
-			else
-			{
-				bookingView.setTotalPriceFormatted(null);
-			}
+			bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(newBookingPrice));
+		}
+		else
+		{
+			bookingView.setTotalPriceFormatted(null);
 		}
 	}
 
-
-
 	@Autowired
-	public void setPresentationRepository(PresentationRepository presentationRepository)
+	public void setCommonPresentationService(CommonPresentationService commonPresentationService)
 	{
-		this.presentationRepository = presentationRepository;
-	}
-
-	@Autowired
-	public void setSeatRepository(SeatRepository seatRepository)
-	{
-		this.seatRepository = seatRepository;
+		this.commonPresentationService = commonPresentationService;
 	}
 
 	@Autowired
@@ -178,5 +130,11 @@ public class BookingServiceImpl implements BookingService
 	public void setBookingRepository(BookingRepository bookingRepository)
 	{
 		this.bookingRepository = bookingRepository;
+	}
+
+	@Autowired
+	public void setSeatsService(SeatsService seatsService)
+	{
+		this.seatsService = seatsService;
 	}
 }
