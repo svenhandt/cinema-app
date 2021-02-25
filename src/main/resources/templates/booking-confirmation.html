@@ -18,8 +18,9 @@
 
         <br/><br/><br/>
 
-        <h2 class="text-center">Vielen Dank!</h2>
+        <h2 class="d-print-none text-center">Vielen Dank!</h2>
         <h4 class="text-center">Nachfolgend finden Sie Ihre Buchungsdaten</h4>
+        <h6 class="d-print-none text-center">Bitte <a href="javascript:print()">Drucken</a> Sie sich Ihre Daten aus und bringen Sie sie mit. </h6>
 
         <br/><br/><br/>
 
@@ -76,7 +77,7 @@
                 </td>
             </tr>
 
-            <tr>
+            <tr class="d-print-none">
                 <td>
                     <p class="font-weight-bold">Kreditkarteninformation:</p>
                 </td>
@@ -85,12 +86,21 @@
                 </td>
             </tr>
 
+            <tr>
+                <td>
+                    <p class="font-weight-bold">Gesamtpreis:</p>
+                </td>
+                <td>
+                    <p th:text="${booking.totalPriceFormatted}" />
+                </td>
+            </tr>
+
         </table>
 
         <hr/>
 
         <div class="row">
-            <a href="/">Zurück zur Übersicht</a>
+            <a class="d-print-none" href="/">Zurück zur Übersicht</a>
         </div>
 
     </div>
