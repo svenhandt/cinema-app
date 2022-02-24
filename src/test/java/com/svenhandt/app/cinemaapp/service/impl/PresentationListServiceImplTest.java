@@ -181,7 +181,7 @@ public class PresentationListServiceImplTest
 
 	private void validate1stFilmPresentationsMatrixView(FilmPresentationsMatrixView filmPresentationsMatrixView)
 	{
-		filmPresentationsMatrixView.
+
 	}
 
 }

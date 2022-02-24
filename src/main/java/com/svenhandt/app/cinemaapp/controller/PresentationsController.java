@@ -9,6 +9,7 @@ import com.svenhandt.app.cinemaapp.view.BookingView;
 import com.svenhandt.app.cinemaapp.view.FilmPresentationsMatrixView;
 import com.svenhandt.app.cinemaapp.view.PresentationView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,11 +30,10 @@ public class PresentationsController
 	private BookingService bookingService;
 
 	@GetMapping("/presentations")
-	public String getFilmsAndPresentationsPage(Model model)
+	public ResponseEntity<Set<FilmPresentationsMatrixView>> getFilmsAndPresentationsPage()
 	{
 		Set<FilmPresentationsMatrixView> filmsWithPresentations = presentationListService.createFilmsAndPresentationsView();
-		model.addAttribute("filmsWithPresentations", filmsWithPresentations);
-		return "presentations";
+		return ResponseEntity.ok(filmsWithPresentations);
 	}
 
 	@GetMapping("/presentationDetails")
