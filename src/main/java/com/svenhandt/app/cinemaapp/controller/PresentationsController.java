@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Set;
 
-
+@CrossOrigin("${crossorigin.angular.http}")
 @Controller
 public class PresentationsController
 {
@@ -37,18 +38,18 @@ public class PresentationsController
 	}
 
 	@GetMapping("/presentationDetails")
-	public String getPresentationDetailsPage(HttpServletRequest httpServletRequest, Model model)
+	public ResponseEntity<BookingView> getPresentationDetailsPage(HttpServletRequest httpServletRequest)
 	{
+		BookingView presentationBookingView = null;
 		String presentationIdStr = httpServletRequest.getParameter("id");
 		if(presentationIdStr != null && presentationIdStr.matches("\\d+"))
 		{
 			int presentationId = Integer.parseInt(presentationIdStr);
 			PresentationView presentationDetails = presentationDetailsService.getPresentationDetails(presentationId, PresentationDetailsOption.FULL);
-			model.addAttribute("presentationDetails", presentationDetails);
-			BookingView presentationBookingView = getBookingViewFromSession(presentationId, httpServletRequest);
-			model.addAttribute("booking", presentationBookingView);
+			presentationBookingView = getBookingViewFromSession(presentationId, httpServletRequest);
+			presentationBookingView.setPresentationView(presentationDetails);
 		}
-		return "presentation-details";
+		return ResponseEntity.ok(presentationBookingView);
 	}
 
 	private BookingView getBookingViewFromSession(int presentationId, HttpServletRequest httpServletRequest)

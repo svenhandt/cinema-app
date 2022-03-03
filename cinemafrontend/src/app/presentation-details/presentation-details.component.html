@@ -1,1 +1,67 @@
-<p>presentation-details works!</p>
+
+
+<h2 class="text-center">{{bookingForPresentationDetails?.presentation?.film?.title}}</h2>
+<h4 class="text-center">{{bookingForPresentationDetails?.presentation?.room?.roomName
+    + ', ' + bookingForPresentationDetails?.presentation?.dayOfWeek
+    + ' ' + bookingForPresentationDetails?.presentation?.startTime }}</h4>
+
+<br/><br/>
+<h5 class="text-center">Bitte treffen Sie Ihre Platzwahl</h5>
+
+<br/><br/>
+
+<div class="border-top"></div>
+
+<br/><br/><br/>
+
+
+
+<table class="table table-borderless">
+
+  <tbody>
+  <tr *ngFor="let seatRow of bookingForPresentationDetails?.presentation?.room?.seatRows">
+    <td>
+      <span>{{seatRow.id}}</span>
+    </td>
+
+    <td *ngFor="let seat of seatRow.seats">
+
+      <input type="checkbox" class="seatCheckbox"
+             *ngIf="seat?.seatType === 'AVAILABLE'" />
+      <!--<input type="checkbox" class="seatCheckbox"
+             *ngIf="seat?.seatType === 'AVAILABLE'" [checked]="bookingForPresentationDetails?." />-->
+
+
+      <input type="checkbox" *ngIf="seat?.seatType === 'OCCUPPIED'"
+             disabled="disabled"/>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+<br/>
+
+<div class="col-12">
+
+  <form>
+
+    <input type="hidden" name="bookingId"  [value]="bookingForPresentationDetails?.id" />
+
+    <span class="lead" [style]="bookingForPresentationDetails?.totalPriceFormatted === undefined ? 'display: none;' : 'display: inline;'">Gesamtsumme: {{bookingForPresentationDetails?.totalPriceFormatted}}</span>
+
+    <input type="submit" value="Buchen" class="btn btn-primary btn-lg float-right" [style]="bookingForPresentationDetails?.totalPriceFormatted === undefined ? 'display: none;' : 'display: inline;'" />
+
+  </form>
+
+</div>
+
+<br/><br/>
+
+<hr/>
+
+<div class="row">
+  <a class="link-primary" routerLink="/presentations">Zurück zur Übersicht</a>
+</div>
+

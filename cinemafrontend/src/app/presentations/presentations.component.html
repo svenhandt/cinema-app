@@ -1,1 +1,41 @@
-<p>presentations works!</p>
+
+<div class="container">
+
+  <h1 class="text-center">Kinokasse</h1>
+  <br/><br/><br/>
+  <div class="row align-items-start border-bottom border-top border-left border-right" *ngFor="let filmPresentationMatrixModel of filmPresentationMatrixModels">
+    <div class="col col-lg-3">
+      <h5>{{filmPresentationMatrixModel.film?.title}}</h5>
+    </div>
+    <div class="col col-lg-9">
+
+      <table class="table table-bordered table-striped">
+
+        <thead class="thead-dark">
+        <tr>
+          <th *ngFor="let presentationDay of filmPresentationMatrixModel.presentationDays">
+            <span>{{presentationDay.weekday}}</span>
+          </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+          <td *ngFor="let presentationDay of filmPresentationMatrixModel.presentationDays">
+
+            <div *ngFor="let presentation of presentationDay.presentations">
+              <a class="link-primary" style="cursor: pointer" (click)="navigateToPresentation(presentation.id)">{{presentation.startTime}}</a>
+            </div>
+
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+
+  </div>
+
+
+</div>

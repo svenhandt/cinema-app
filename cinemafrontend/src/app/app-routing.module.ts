@@ -8,7 +8,7 @@ import {BookingConfirmationComponent} from "./booking-confirmation/booking-confi
 const routes: Routes = [
   {path: '', redirectTo: '/presentations', pathMatch: 'full'},
   {path: 'presentations', component: PresentationsComponent},
-  {path: 'presentationDetails', component: PresentationDetailsComponent},
+  {path: 'presentationDetails/:id', component: PresentationDetailsComponent},
   {path: 'bookingDataForm', component: BookingDataFormComponent},
   {path: 'bookingConfirmation', component: BookingConfirmationComponent}
 ];
