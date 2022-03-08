@@ -54,13 +54,19 @@ export class PresentationsService {
       params: params
     }).pipe(
       map(responseData => {
-        console.log(responseData);
-        let booking: BookingModel = new BookingModel();
-        booking.id = responseData['id'];
-        booking.presentation = this.createPresentationForDetails(responseData['presentationView']);
-        return booking;
+        return this.createBookingForDetails(responseData);
       })
     );
+  }
+
+  private createBookingForDetails(responseData: any): BookingModel {
+    let booking: BookingModel = new BookingModel();
+    booking.id = responseData['id'];
+    booking.totalPrice = 0;
+    booking.seats = [];
+    booking.creditCardNo = '';
+    booking.presentation = this.createPresentationForDetails(responseData['presentationView']);
+    return booking;
   }
 
   private createPresentationForDetails(presentationView: any): PresentationModel {
@@ -69,6 +75,7 @@ export class PresentationsService {
     presentationModel.dayOfWeek = presentationView['dayOfWeek'];
     presentationModel.startTime = presentationView['startTime'];
     presentationModel.film = presentationView['filmView'];
+    presentationModel.price = presentationView['price'];
     presentationModel.room = this.createRoomForDetails(presentationView['roomView'])
     return presentationModel;
   }

@@ -1,5 +1,4 @@
 
-
 <h2 class="text-center">{{bookingForPresentationDetails?.presentation?.film?.title}}</h2>
 <h4 class="text-center">{{bookingForPresentationDetails?.presentation?.room?.roomName
     + ', ' + bookingForPresentationDetails?.presentation?.dayOfWeek
@@ -27,9 +26,9 @@
     <td *ngFor="let seat of seatRow.seats">
 
       <input type="checkbox" class="seatCheckbox"
-             *ngIf="seat?.seatType === 'AVAILABLE'" />
-      <!--<input type="checkbox" class="seatCheckbox"
-             *ngIf="seat?.seatType === 'AVAILABLE'" [checked]="bookingForPresentationDetails?." />-->
+             *ngIf="seat?.seatType === 'AVAILABLE'"
+            (click)="isInBooking(seat) ? onRemoveSeatFromBooking(seat) : onAddSeatToBooking(seat)"
+            [checked]="isInBooking(seat)"/>
 
 
       <input type="checkbox" *ngIf="seat?.seatType === 'OCCUPPIED'"
@@ -43,18 +42,21 @@
 
 <br/>
 
-<div class="col-12">
+<div class="row">
+  <div class="col-xl-8"></div>
+  <div class="col-xl-4">
 
-  <form>
+    <span class="lead" [style]="bookingForPresentationDetails?.totalPrice ?  'display: inline;' : 'display: none;'">Gesamtsumme: {{bookingForPresentationDetails?.totalPrice | currency: 'EUR': 'symbol'}}</span>
+    &nbsp;&nbsp;
+    <input
+      type="button"
+      value="Buchen"
+      class="btn btn-primary btn-lg float-right"
+      [style]="bookingForPresentationDetails?.totalPrice ? 'display: inline;' : 'display: none;'"
+      (click)="onInitiateBooking()"
+    />
 
-    <input type="hidden" name="bookingId"  [value]="bookingForPresentationDetails?.id" />
-
-    <span class="lead" [style]="bookingForPresentationDetails?.totalPriceFormatted === undefined ? 'display: none;' : 'display: inline;'">Gesamtsumme: {{bookingForPresentationDetails?.totalPriceFormatted}}</span>
-
-    <input type="submit" value="Buchen" class="btn btn-primary btn-lg float-right" [style]="bookingForPresentationDetails?.totalPriceFormatted === undefined ? 'display: none;' : 'display: inline;'" />
-
-  </form>
-
+  </div>
 </div>
 
 <br/><br/>
@@ -62,6 +64,8 @@
 <hr/>
 
 <div class="row">
-  <a class="link-primary" routerLink="/presentations">Zurück zur Übersicht</a>
+  <div>
+    &nbsp;&nbsp;<a class="link-primary" routerLink="/presentations">Zurück zur Übersicht</a>
+  </div>
 </div>
 

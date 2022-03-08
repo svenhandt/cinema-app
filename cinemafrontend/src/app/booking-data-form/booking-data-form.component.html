@@ -1,1 +1,67 @@
-<p>booking-data-form works!</p>
+
+<h2 class="text-center">{{booking?.presentation?.film?.title}}</h2>
+<h4 class="text-center">{{booking?.presentation?.room?.roomName + ', ' + booking?.presentation?.dayOfWeek + ' ' + booking?.presentation?.startTime}}</h4>
+<h6 class="text-center">{{getNameForReservedSeats()}}</h6>
+
+<br/><br/>
+<h5 class="text-center">Bitte geben Sie Ihre Kreditkartendaten ein</h5>
+
+<br/><br/>
+
+
+<div class="border-top" ></div>
+
+<br/><br/>
+
+
+<div class="col-md-4 offset-md-4">
+
+  <form #bookingForm="ngForm" (ngSubmit)="onSubmitBookingForm(bookingForm)" appExpiryDate>
+
+    <input type="text" id="cardName" ngModel name="cardName" required
+           #cardName="ngModel" class="form-control mb-4" placeholder="Karteninhaber"/>
+    <p class="alert alert-danger" *ngIf="!cardName.valid && cardName.touched">Bitte geben Sie einen Namen ein</p>
+
+    <input type="text" id="cardNumber" ngModel name="cardNumber" required pattern="^[0-9]{16}$"
+           class="form-control mb-4" placeholder="Kartennummer" #cardNumber="ngModel"/>
+    <p class="alert alert-danger" *ngIf="!cardNumber.valid && cardNumber.touched">Kreditkartennummer muss eine 16-stellige Zahl sein</p>
+
+    <div class="row">
+      <div class="col-4">
+        <label class="expiry-date align-bottom">&nbsp;&nbsp;&nbsp;Gültig bis</label>
+      </div>
+      <div class="col-4">
+        <select class="form-control" id="expiryMonth" ngModel name="expiryMonth" #expiryMonth="ngModel" required>
+          <option *ngFor="let month of expiryMonths">{{month}}</option>
+        </select>
+      </div>
+      <div class="col-4">
+        <select class="form-control" id="expiryYear" ngModel name="expiryYear" #expiryYear="ngModel" required>
+          <option *ngFor="let year of expiryYears">{{year}}</option>
+        </select>
+      </div>
+    </div>
+    <br *ngIf="bookingForm.errors?.['expiryDate'] && expiryMonth.touched && expiryYear.touched"/>
+    <p class="alert alert-danger" *ngIf="bookingForm.errors?.['expiryDate'] && expiryMonth.touched && expiryYear.touched">
+      Das Ablaufdatum muss in der Zukunft liegen
+    </p>
+    <br/>
+    <input type="text" id="cvv" ngModel name="cvv" required pattern="^[0-9]{3,4}$" #cvv="ngModel"
+           class="form-control mb-4" placeholder="Prüfziffer"/>
+    <p class="alert alert-danger" *ngIf="!cvv.valid && cvv.touched">Prüfziffer muss eine 3- oder 4-stellige Zahl sein</p>
+
+    <button type="submit" class="btn btn-primary">Jetzt buchen</button>
+
+  </form>
+
+</div>
+
+<br/><br/>
+
+<hr/>
+
+<div class="row">
+  <div>
+    &nbsp;&nbsp;<a class="link-primary" routerLink="/presentations">Zurück zur Übersicht</a>
+  </div>
+</div>

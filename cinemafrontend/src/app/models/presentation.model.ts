@@ -8,6 +8,7 @@ export class PresentationModel {
   private _startTime: string | undefined;
   private _film: FilmModel | undefined;
   private _room: RoomModel | undefined;
+  private _price: number | undefined;
 
 
   get id(): number | undefined {
@@ -48,5 +49,13 @@ export class PresentationModel {
 
   set room(value: RoomModel | undefined) {
     this._room = value;
+  }
+
+  get price(): number | undefined {
+    return this._price;
+  }
+
+  set price(value: number | undefined) {
+    this._price = value;
   }
 }

@@ -13,6 +13,7 @@ public class PresentationView
 	private String startTime;
 	private FilmView filmView;
 	private RoomView roomView;
+	private BigDecimal price;
 
 	public int getId()
 	{
@@ -62,6 +63,16 @@ public class PresentationView
 	public void setRoomView(RoomView roomView)
 	{
 		this.roomView = roomView;
+	}
+
+	public BigDecimal getPrice()
+	{
+		return price;
+	}
+
+	public void setPrice(BigDecimal price)
+	{
+		this.price = price;
 	}
 
 	@Override

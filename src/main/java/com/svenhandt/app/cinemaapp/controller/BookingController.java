@@ -12,17 +12,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-
+@CrossOrigin("${crossorigin.angular.http}")
 @Controller
 public class BookingController
 {
@@ -32,26 +29,6 @@ public class BookingController
 	private enum Action
 	{
 		ADD, REMOVE
-	}
-
-	@PostMapping("/booking/addSeat")
-	public ResponseEntity<BookingView> addSeatToSessionBooking(@RequestBody String presentationSeatId,  HttpServletRequest httpServletRequest)
-	{
-		return addOrRemoveSeatAtSessionBooking(presentationSeatId, httpServletRequest, Action.ADD);
-	}
-
-	@PostMapping("/booking/removeSeat")
-	public ResponseEntity<BookingView> removeSeatFromSessionBooking(@RequestBody String presentationSeatId,  HttpServletRequest httpServletRequest)
-	{
-		return addOrRemoveSeatAtSessionBooking(presentationSeatId, httpServletRequest, Action.REMOVE);
-	}
-
-	@PostMapping("/booking/prepare")
-	public String prepareBookingDataForm(HttpServletRequest httpServletRequest, Model model)
-	{
-		prepareBookingFormPage(httpServletRequest, model);
-		model.addAttribute("creditCardForm", new CreditCardForm());
-		return "booking-data-form";
 	}
 
 	@PostMapping("/booking/save")
@@ -85,37 +62,6 @@ public class BookingController
 	{
 		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
 		model.addAttribute("currentBooking", bookingView);
-	}
-
-	private ResponseEntity<BookingView> addOrRemoveSeatAtSessionBooking(String presentationSeatId,  HttpServletRequest httpServletRequest, Action action)
-	{
-		String[] presentationSeatIdArr = StringUtils.split(presentationSeatId, "_");
-
-		// <presentationId>_<seatId>
-		Validate.isTrue(presentationSeatIdArr.length == 2);
-
-		int seatId = Integer.parseInt(presentationSeatIdArr[1]);
-		HttpSession currentSession = httpServletRequest.getSession();
-		Object bookingViewObj = currentSession.getAttribute(ApplicationConstants.BOOKING_PRESENTATION_PREFIX + presentationSeatIdArr[0]);
-		return addOrRemoveSeatAtSessionBooking(bookingViewObj, seatId, action);
-	}
-
-
-	private ResponseEntity<BookingView> addOrRemoveSeatAtSessionBooking(Object bookingViewObj, int seatId, Action action)
-	{
-		ResponseEntity<BookingView> result;
-		Validate.isTrue(bookingViewObj instanceof BookingView, ApplicationConstants.NO_BOOKING_IN_SESSION);
-		BookingView bookingView = (BookingView)bookingViewObj;
-		if(action == Action.ADD)
-		{
-			bookingService.addSeatAndCalculate(bookingView, seatId);
-		}
-		else if(action == Action.REMOVE)
-		{
-			bookingService.removeSeatAndCalculate(bookingView, seatId);
-		}
-		result = ResponseEntity.ok(bookingView);
-		return result;
 	}
 
 	private int saveBooking(HttpServletRequest httpServletRequest, CreditCardForm creditCardForm)
