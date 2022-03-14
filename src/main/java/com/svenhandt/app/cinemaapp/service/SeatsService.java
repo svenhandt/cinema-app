@@ -19,7 +19,7 @@ public interface SeatsService
 
 	Map<Integer, SeatRowView> createNumberSeatRowMapping(Map<Integer, Seat> occuppiedSeats, List<Seat> seatsForRoom);
 
-	List<Seat> getSeats(Map<Integer, SeatView> seatViewMap);
+	List<Seat> getSeats(List<SeatView> seatViews);
 
 	void removeSeatInView(Map<Integer, SeatView> seatViewMap, int seatId);
 

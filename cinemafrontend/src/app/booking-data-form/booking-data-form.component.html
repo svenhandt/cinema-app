@@ -16,6 +16,10 @@
 
 <div class="col-md-4 offset-md-4">
 
+  <h6 class="alert alert-danger" *ngIf="backendValidationError">Die Buchung war nicht erfolgreich. Bitte kontrollieren Sie Ihre Eingaben.</h6>
+  <br *ngIf="backendValidationError" />
+  <br *ngIf="backendValidationError" />
+
   <form #bookingForm="ngForm" (ngSubmit)="onSubmitBookingForm(bookingForm)" appExpiryDate>
 
     <input type="text" id="cardName" ngModel name="cardName" required
@@ -50,7 +54,7 @@
            class="form-control mb-4" placeholder="Prüfziffer"/>
     <p class="alert alert-danger" *ngIf="!cvv.valid && cvv.touched">Prüfziffer muss eine 3- oder 4-stellige Zahl sein</p>
 
-    <button type="submit" class="btn btn-primary">Jetzt buchen</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!bookingForm.valid">Jetzt buchen</button>
 
   </form>
 

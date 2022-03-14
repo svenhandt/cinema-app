@@ -1,10 +1,12 @@
 package com.svenhandt.app.cinemaapp.controller;
 
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
-import com.svenhandt.app.cinemaapp.entity.Booking;
-import com.svenhandt.app.cinemaapp.forms.creditcardform.CreditCardForm;
+import com.svenhandt.app.cinemaapp.commands.booking.CreateBookingCommand;
+import com.svenhandt.app.cinemaapp.enums.CreateBookingStatus;
 import com.svenhandt.app.cinemaapp.service.BookingService;
 import com.svenhandt.app.cinemaapp.view.BookingView;
+import com.svenhandt.app.cinemaapp.view.CreateBookingResultView;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,63 +28,28 @@ public class BookingController
 
 	private BookingService bookingService;
 
-	private enum Action
-	{
-		ADD, REMOVE
-	}
-
 	@PostMapping("/booking/save")
-	public String saveBooking(@Valid CreditCardForm creditCardForm, BindingResult bindingResult,
-			HttpServletRequest httpServletRequest, Model model, RedirectAttributes redirectAttributes)
+	public ResponseEntity<CreateBookingResultView> saveBooking(@RequestBody @Valid CreateBookingCommand createBookingCommand, BindingResult bindingResult)
 	{
-		String targetPage = "";
+		CreateBookingResultView createBookingResultView = new CreateBookingResultView();
 		if(bindingResult.hasErrors())
 		{
-			prepareBookingFormPage(httpServletRequest, model);
-			targetPage = "booking-data-form";
+			createBookingResultView.setCreateBookingStatus(CreateBookingStatus.FORM_ERROR);
 		}
 		else
 		{
-			int newBookingId = saveBooking(httpServletRequest, creditCardForm);
-			redirectAttributes.addAttribute("bookingId", newBookingId);
-			targetPage = "redirect:/booking/confirmation";
+			createBookingResultView.setCreateBookingStatus(CreateBookingStatus.OK);
+			int bookingId = bookingService.saveBooking(createBookingCommand);
+			createBookingResultView.setBookingId(bookingId);
 		}
-		return targetPage;
+		return ResponseEntity.ok(createBookingResultView);
 	}
 
 	@GetMapping("/booking/confirmation")
-	public String bookingConfirmation(@RequestParam("bookingId") int bookingId, Model model)
+	public ResponseEntity<BookingView> bookingConfirmation(@RequestParam("bookingId") int bookingId)
 	{
 		BookingView bookingView = bookingService.getForBookingId(bookingId);
-		model.addAttribute("booking", bookingView);
-		return "booking-confirmation";
-	}
-
-	private void prepareBookingFormPage(HttpServletRequest httpServletRequest, Model model)
-	{
-		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
-		model.addAttribute("currentBooking", bookingView);
-	}
-
-	private int saveBooking(HttpServletRequest httpServletRequest, CreditCardForm creditCardForm)
-	{
-		BookingView bookingView = getBookingViewFromRequestParam(httpServletRequest);
-		bookingView.setName(creditCardForm.getCardName());
-		bookingView.setCreditCardNo(StringUtils.substring(
-				creditCardForm.getCardNumber(), 0, 4) + "************");
-		int newBookingId = bookingService.saveBooking(bookingView);
-		httpServletRequest.getSession().removeAttribute(ApplicationConstants.BOOKING_PRESENTATION_PREFIX + bookingView.getId());
-		return newBookingId;
-	}
-
-	private BookingView getBookingViewFromRequestParam(HttpServletRequest httpServletRequest)
-	{
-		String bookingId = httpServletRequest.getParameter("bookingId");
-		Validate.notNull(bookingId, "Booking id must not be null");
-		HttpSession session = httpServletRequest.getSession();
-		Object bookingViewObject = session.getAttribute(ApplicationConstants.BOOKING_PRESENTATION_PREFIX + bookingId);
-		Validate.isTrue(bookingViewObject instanceof BookingView, ApplicationConstants.NO_BOOKING_IN_SESSION);
-		return (BookingView)bookingViewObject;
+		return ResponseEntity.ok(bookingView);
 	}
 
 	@Autowired

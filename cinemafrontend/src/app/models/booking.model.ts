@@ -6,7 +6,6 @@ export class BookingModel {
   private _id: number | undefined;
   private _presentation: PresentationModel | undefined;
   private _totalPrice: number | undefined; // change depending on REST-answer
-  private _totalPriceFormatted: string | undefined;
   private _seats: SeatModel[] | undefined;
   private _name: string | undefined;
   private _creditCardNo: string | undefined;
@@ -34,14 +33,6 @@ export class BookingModel {
 
   set totalPrice(value: number | undefined) {
     this._totalPrice = value;
-  }
-
-  get totalPriceFormatted(): string | undefined {
-    return this._totalPriceFormatted;
-  }
-
-  set totalPriceFormatted(value: string | undefined) {
-    this._totalPriceFormatted = value;
   }
 
   get seats(): SeatModel[] | undefined {

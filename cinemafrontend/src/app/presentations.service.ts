@@ -47,7 +47,7 @@ export class PresentationsService {
 
   fetchPresentationDetails(id: number) {
     let params = new HttpParams();
-    if(params !== undefined) {
+    if(id !== undefined) {
       params = params.append('id', id);
     }
     return this.http.get<any>(environment.cinemaBaseUrl + 'presentationDetails', {

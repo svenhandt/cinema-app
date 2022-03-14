@@ -1,15 +1,23 @@
-package com.svenhandt.app.cinemaapp.forms.creditcardform;
+package com.svenhandt.app.cinemaapp.commands.booking;
 
 
 
-import com.svenhandt.app.cinemaapp.forms.creditcardform.validation.ValidExpiryDate;
+import java.util.List;
+
+import com.svenhandt.app.cinemaapp.commands.booking.validation.ValidExpiryDate;
+import com.svenhandt.app.cinemaapp.view.SeatView;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 
-public class CreditCardForm
+public class CreateBookingCommand
 {
+
+	private int presentationId;
+	private int roomId;
+	private List<SeatView> seats;
+
 
 	@NotBlank(message = "Bitte geben Sie einen Namen ein")
 	private String cardName;
@@ -23,7 +31,37 @@ public class CreditCardForm
 	@Pattern(regexp = "\\d{3,4}", message = "Prüfziffer muss eine 3- oder 4-stellige Zahl sein")
 	private String cvv;
 
-	public CreditCardForm()
+	public int getPresentationId()
+	{
+		return presentationId;
+	}
+
+	public void setPresentationId(int presentationId)
+	{
+		this.presentationId = presentationId;
+	}
+
+	public int getRoomId()
+	{
+		return roomId;
+	}
+
+	public void setRoomId(int roomId)
+	{
+		this.roomId = roomId;
+	}
+
+	public List<SeatView> getSeats()
+	{
+		return seats;
+	}
+
+	public void setSeats(List<SeatView> seats)
+	{
+		this.seats = seats;
+	}
+
+	public CreateBookingCommand()
 	{
 		this.expiryDate = new ExpiryDate();
 	}

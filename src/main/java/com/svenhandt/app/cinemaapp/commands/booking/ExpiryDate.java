@@ -1,4 +1,4 @@
-package com.svenhandt.app.cinemaapp.forms.creditcardform;
+package com.svenhandt.app.cinemaapp.commands.booking;
 
 import java.util.ArrayList;
 import java.util.Calendar;

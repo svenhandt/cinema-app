@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: 'presentations', component: PresentationsComponent},
   {path: 'presentationDetails/:id', component: PresentationDetailsComponent},
   {path: 'bookingDataForm', component: BookingDataFormComponent},
-  {path: 'bookingConfirmation', component: BookingConfirmationComponent}
+  {path: 'bookingConfirmation/:id', component: BookingConfirmationComponent}
 ];
 
 @NgModule({

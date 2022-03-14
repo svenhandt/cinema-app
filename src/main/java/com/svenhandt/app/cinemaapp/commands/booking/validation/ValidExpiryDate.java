@@ -1,4 +1,4 @@
-package com.svenhandt.app.cinemaapp.forms.creditcardform.validation;
+package com.svenhandt.app.cinemaapp.commands.booking.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

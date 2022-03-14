@@ -1,5 +1,6 @@
 package com.svenhandt.app.cinemaapp.service.impl;
 
+import com.svenhandt.app.cinemaapp.commands.booking.CreateBookingCommand;
 import com.svenhandt.app.cinemaapp.constants.ApplicationConstants;
 import com.svenhandt.app.cinemaapp.dao.BookingRepository;
 import com.svenhandt.app.cinemaapp.entity.Booking;
@@ -10,6 +11,8 @@ import com.svenhandt.app.cinemaapp.service.*;
 import com.svenhandt.app.cinemaapp.view.BookingView;
 import com.svenhandt.app.cinemaapp.view.PresentationView;
 import com.svenhandt.app.cinemaapp.view.SeatView;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,29 +48,14 @@ public class BookingServiceImpl implements BookingService
 	}
 
 	@Override
-	public void addSeatAndCalculate(BookingView bookingView, int seatId)
-	{
-		SeatView seatView = seatsService.getSeatViewForId(seatId);
-		bookingView.getSeatsMap().put(seatId, seatView);
-		calculate(bookingView);
-	}
-
-	@Override
-	public void removeSeatAndCalculate(BookingView bookingView, int seatId)
-	{
-		Map<Integer, SeatView> seatViewsMap = bookingView.getSeatsMap();
-		seatsService.removeSeatInView(seatViewsMap, seatId);
-		calculate(bookingView);
-	}
-
-	@Override
-	public int saveBooking(BookingView bookingView)
+	public int saveBooking(CreateBookingCommand createBookingCommand)
 	{
 		Booking booking = new Booking();
-		booking.setName(bookingView.getName());
-		booking.setCreditCardNo(bookingView.getCreditCardNo());
-		Presentation presentation = commonPresentationService.getPresentation(bookingView.getId());
-		List<Seat> seats = seatsService.getSeats(bookingView.getSeatsMap());
+		booking.setName(createBookingCommand.getCardName());
+		booking.setCreditCardNo(StringUtils.substring(
+				createBookingCommand.getCardNumber(), 0, 4) + "************");
+		Presentation presentation = commonPresentationService.getPresentation(createBookingCommand.getPresentationId());
+		List<Seat> seats = seatsService.getSeats(createBookingCommand.getSeats());
 		booking.setPresentation(presentation);
 		booking.setSeats(seats);
 		Validate.notNull(presentation.getPrice(), ApplicationConstants.PRESENTATION_MUST_HAVE_PRICE);
@@ -92,23 +80,6 @@ public class BookingServiceImpl implements BookingService
 		bookingView.setCreditCardNo(booking.getCreditCardNo());
 		bookingView.setName(booking.getName());
 		return bookingView;
-	}
-
-	private void calculate(BookingView bookingView)
-	{
-		PresentationView presentationView = bookingView.getPresentationView();
-		Presentation presentationForBooking = commonPresentationService.getPresentation(presentationView.getId());
-		BigDecimal newBookingPrice = presentationForBooking.getPrice();
-		newBookingPrice = newBookingPrice.multiply(new BigDecimal(bookingView.getSeatsMap().size()));
-		bookingView.setTotalPrice(newBookingPrice);
-		if(bookingView.getSeatsMap().size() > 0)
-		{
-			bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(newBookingPrice));
-		}
-		else
-		{
-			bookingView.setTotalPriceFormatted(null);
-		}
 	}
 
 	@Autowired

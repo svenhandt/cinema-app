@@ -56,11 +56,12 @@ public class SeatsServiceImpl implements SeatsService
 	}
 
 	@Override
-	public List<Seat> getSeats(Map<Integer, SeatView> seatViewMap)
+	public List<Seat> getSeats(List<SeatView> seatViews)
 	{
 		List<Seat> seats = new ArrayList<>();
-		for(int seatId : seatViewMap.keySet())
+		for(SeatView seatView: seatViews)
 		{
+			int seatId = seatView.getId();
 			Optional<Seat> seatOptional = seatRepository.findById(seatId);
 			Validate.isTrue(seatOptional.isPresent(), ApplicationConstants.NO_SEAT_FOR_ID + seatId);
 			seats.add(seatOptional.get());

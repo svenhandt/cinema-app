@@ -1,6 +1,6 @@
-package com.svenhandt.app.cinemaapp.forms.creditcardform.validation;
+package com.svenhandt.app.cinemaapp.commands.booking.validation;
 
-import com.svenhandt.app.cinemaapp.forms.creditcardform.ExpiryDate;
+import com.svenhandt.app.cinemaapp.commands.booking.ExpiryDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
