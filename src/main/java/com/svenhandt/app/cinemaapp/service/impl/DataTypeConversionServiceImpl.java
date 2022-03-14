@@ -137,10 +137,4 @@ public class DataTypeConversionServiceImpl implements DataTypeConversionService
 		return minute;
 	}
 
-	@Override
-	public String getFormattedPrice(BigDecimal price)
-	{
-		return NumberFormat.getCurrencyInstance().format(price);
-	}
-
 }

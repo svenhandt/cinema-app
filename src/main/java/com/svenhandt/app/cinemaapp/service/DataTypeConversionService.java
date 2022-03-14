@@ -15,6 +15,4 @@ public interface DataTypeConversionService
 
 	BigDecimal getPrice(String priceStr);
 
-	String getFormattedPrice(BigDecimal price);
-
 }

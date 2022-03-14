@@ -76,7 +76,6 @@ public class BookingServiceImpl implements BookingService
 				presentationDetailsService.getPresentationDetails(booking.getPresentation().getId(), PresentationDetailsOption.BASIC));
 		bookingView.setSeatsMap(seatsService.getSeatViewsMap(booking.getSeats()));
 		bookingView.setTotalPrice(booking.getTotalPrice());
-		bookingView.setTotalPriceFormatted(dataTypeConversionService.getFormattedPrice(booking.getTotalPrice()));
 		bookingView.setCreditCardNo(booking.getCreditCardNo());
 		bookingView.setName(booking.getName());
 		return bookingView;
